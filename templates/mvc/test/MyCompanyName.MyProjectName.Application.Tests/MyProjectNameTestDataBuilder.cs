@@ -1,27 +1,17 @@
 ﻿using System.Threading.Tasks;
+using Volo.Abp.Data;
 using Volo.Abp.DependencyInjection;
-using Volo.Abp.Identity;
-using Volo.Abp.Threading;
 
 namespace MyCompanyName.MyProjectName
 {
-    public class MyProjectNameTestDataBuilder : ITransientDependency
+    public class MyProjectNameTestDataSeedContributor : IDataSeedContributor, ITransientDependency
     {
-        private readonly IIdentityDataSeeder _identityDataSeeder;
-
-        public MyProjectNameTestDataBuilder(IIdentityDataSeeder identityDataSeeder)
+        public Task SeedAsync(DataSeedContext context)
         {
-            _identityDataSeeder = identityDataSeeder;
-        }
+            /* Seed additional test data...
+             */
 
-        public void Build()
-        {
-            AsyncHelper.RunSync(BuildInternalAsync);
-        }
-
-        public async Task BuildInternalAsync()
-        {
-            await _identityDataSeeder.SeedAsync("1q2w3E*");
+            return Task.CompletedTask;
         }
     }
 }

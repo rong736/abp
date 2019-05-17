@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using System.Threading.Tasks;
 using Volo.Abp.Application.Services;
 
 namespace Volo.Abp.Identity
@@ -12,5 +8,7 @@ namespace Volo.Abp.Identity
         Task<ProfileDto> GetAsync();
 
         Task<ProfileDto> UpdateAsync(UpdateProfileDto input);
+
+        Task ChangePasswordAsync(string currentPassword, string newPassword);
     }
 }

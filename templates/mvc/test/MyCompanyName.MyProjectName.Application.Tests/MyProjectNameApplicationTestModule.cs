@@ -38,11 +38,6 @@ namespace MyCompanyName.MyProjectName
             });
         }
 
-        public override void OnApplicationInitialization(ApplicationInitializationContext context)
-        {
-            SeedTestData(context);
-        }
-
         public override void OnApplicationShutdown(ApplicationShutdownContext context)
         {
             _sqliteConnection.Dispose();
@@ -53,26 +48,16 @@ namespace MyCompanyName.MyProjectName
             var connection = new SqliteConnection("Data Source=:memory:");
             connection.Open();
 
-            var options = new DbContextOptionsBuilder<MyProjectNameDbContext>()
+            var options = new DbContextOptionsBuilder<MyProjectNameMigrationsDbContext>()
                 .UseSqlite(connection)
                 .Options;
 
-            using (var context = new MyProjectNameDbContext(options))
+            using (var context = new MyProjectNameMigrationsDbContext(options))
             {
                 context.GetService<IRelationalDatabaseCreator>().CreateTables();
             }
 
             return connection;
-        }
-
-        private static void SeedTestData(ApplicationInitializationContext context)
-        {
-            using (var scope = context.ServiceProvider.CreateScope())
-            {
-                scope.ServiceProvider
-                    .GetRequiredService<MyProjectNameTestDataBuilder>()
-                    .Build();
-            }
         }
     }
 }

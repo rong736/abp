@@ -15,16 +15,13 @@ namespace Volo.Abp.Identity
     {
         private readonly IdentityRoleManager _roleManager;
         private readonly IIdentityRoleRepository _roleRepository;
-        private readonly IPermissionAppServiceHelper _permissionAppServiceHelper;
 
         public IdentityRoleAppService(
             IdentityRoleManager roleManager,
-            IIdentityRoleRepository roleRepository, 
-            IPermissionAppServiceHelper permissionAppServiceHelper)
+            IIdentityRoleRepository roleRepository)
         {
             _roleManager = roleManager;
             _roleRepository = roleRepository;
-            _permissionAppServiceHelper = permissionAppServiceHelper;
         }
 
         public async Task<IdentityRoleDto> GetAsync(Guid id)
@@ -52,20 +49,6 @@ namespace Volo.Abp.Identity
             return ObjectMapper.Map<List<IdentityRole>, List<IdentityRoleDto>>(list);
         }
 
-        [Authorize(IdentityPermissions.Roles.ManagePermissions)]
-        public async Task<GetPermissionListResultDto> GetPermissionsAsync(Guid id)
-        {
-            var role = await _roleRepository.GetAsync(id);
-            return await _permissionAppServiceHelper.GetAsync(RolePermissionValueProvider.ProviderName, role.Name); //TODO: User normalized role name instad of name?
-        }
-
-        [Authorize(IdentityPermissions.Roles.ManagePermissions)]
-        public async Task UpdatePermissionsAsync(Guid id, UpdatePermissionsDto input)
-        {
-            var role = await _roleRepository.GetAsync(id);
-            await _permissionAppServiceHelper.UpdateAsync(RolePermissionValueProvider.ProviderName, role.Name, input);
-        }
-
         [Authorize(IdentityPermissions.Roles.Create)]
         public async Task<IdentityRoleDto> CreateAsync(IdentityRoleCreateDto input)
         {
@@ -84,6 +67,7 @@ namespace Volo.Abp.Identity
         public async Task<IdentityRoleDto> UpdateAsync(Guid id, IdentityRoleUpdateDto input)
         {
             var role = await _roleManager.GetByIdAsync(id);
+            role.ConcurrencyStamp = input.ConcurrencyStamp;
 
             (await _roleManager.SetRoleNameAsync(role, input.Name)).CheckErrors();
 

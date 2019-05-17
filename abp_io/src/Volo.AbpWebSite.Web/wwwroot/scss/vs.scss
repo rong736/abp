@@ -3,7 +3,7 @@
 @import "footer.scss";
 @import "home.scss";
 @import "docs.scss"; 
-@media (max-width: 767px) { 
+@media (max-width: 992px) { 
     @import "responsive.scss"; 
 }
 
@@ -19,4 +19,12 @@
 
 body {
     background-size: cover;
+}
+
+.applications-container {
+    .card-body {
+        p {
+            min-height: 7em;
+        }
+    }
 }

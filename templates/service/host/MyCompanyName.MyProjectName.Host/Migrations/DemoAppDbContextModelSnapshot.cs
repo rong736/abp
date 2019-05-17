@@ -15,7 +15,7 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.1-rtm-30846")
+                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -24,9 +24,17 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<string>("ApplicationName")
+                        .HasColumnName("ApplicationName")
+                        .HasMaxLength(96);
+
                     b.Property<string>("BrowserInfo")
                         .HasColumnName("BrowserInfo")
                         .HasMaxLength(512);
+
+                    b.Property<string>("ClientId")
+                        .HasColumnName("ClientId")
+                        .HasMaxLength(64);
 
                     b.Property<string>("ClientIpAddress")
                         .HasColumnName("ClientIpAddress")
@@ -39,6 +47,12 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.Property<string>("Comments")
                         .HasColumnName("Comments")
                         .HasMaxLength(256);
+
+                    b.Property<string>("ConcurrencyStamp");
+
+                    b.Property<string>("CorrelationId")
+                        .HasColumnName("CorrelationId")
+                        .HasMaxLength(64);
 
                     b.Property<string>("Exceptions")
                         .HasColumnName("Exceptions")
@@ -68,6 +82,8 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.Property<Guid?>("TenantId")
                         .HasColumnName("TenantId");
 
+                    b.Property<string>("TenantName");
+
                     b.Property<string>("Url")
                         .HasColumnName("Url")
                         .HasMaxLength(256);
@@ -96,8 +112,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.Property<Guid>("AuditLogId")
                         .HasColumnName("AuditLogId");
 
-                    b.Property<Guid?>("AuditLogId1");
-
                     b.Property<int>("ExecutionDuration")
                         .HasColumnName("ExecutionDuration");
 
@@ -125,8 +139,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
 
                     b.HasIndex("AuditLogId");
 
-                    b.HasIndex("AuditLogId1");
-
                     b.HasIndex("TenantId", "ServiceName", "MethodName", "ExecutionTime");
 
                     b.ToTable("AbpAuditLogActions");
@@ -140,8 +152,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.Property<Guid>("AuditLogId")
                         .HasColumnName("AuditLogId");
 
-                    b.Property<Guid?>("AuditLogId1");
-
                     b.Property<DateTime>("ChangeTime")
                         .HasColumnName("ChangeTime");
 
@@ -152,6 +162,8 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                         .IsRequired()
                         .HasColumnName("EntityId")
                         .HasMaxLength(128);
+
+                    b.Property<Guid?>("EntityTenantId");
 
                     b.Property<string>("EntityTypeFullName")
                         .IsRequired()
@@ -168,8 +180,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
 
                     b.HasIndex("AuditLogId");
 
-                    b.HasIndex("AuditLogId1");
-
                     b.HasIndex("TenantId", "EntityTypeFullName", "EntityId");
 
                     b.ToTable("AbpEntityChanges");
@@ -181,8 +191,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<Guid>("EntityChangeId");
-
-                    b.Property<Guid?>("EntityChangeId1");
 
                     b.Property<string>("NewValue")
                         .HasColumnName("NewValue")
@@ -207,8 +215,6 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EntityChangeId");
-
-                    b.HasIndex("EntityChangeId1");
 
                     b.ToTable("AbpEntityPropertyChanges");
                 });
@@ -268,37 +274,25 @@ namespace MyCompanyName.MyProjectName.Host.Migrations
             modelBuilder.Entity("Volo.Abp.AuditLogging.AuditLogAction", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog")
-                        .WithMany()
+                        .WithMany("Actions")
                         .HasForeignKey("AuditLogId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Volo.Abp.AuditLogging.AuditLog")
-                        .WithMany("Actions")
-                        .HasForeignKey("AuditLogId1");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.EntityChange", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.AuditLog")
-                        .WithMany()
+                        .WithMany("EntityChanges")
                         .HasForeignKey("AuditLogId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Volo.Abp.AuditLogging.AuditLog")
-                        .WithMany("EntityChanges")
-                        .HasForeignKey("AuditLogId1");
                 });
 
             modelBuilder.Entity("Volo.Abp.AuditLogging.EntityPropertyChange", b =>
                 {
                     b.HasOne("Volo.Abp.AuditLogging.EntityChange")
-                        .WithMany()
+                        .WithMany("PropertyChanges")
                         .HasForeignKey("EntityChangeId")
                         .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Volo.Abp.AuditLogging.EntityChange")
-                        .WithMany("PropertyChanges")
-                        .HasForeignKey("EntityChangeId1");
                 });
 #pragma warning restore 612, 618
         }

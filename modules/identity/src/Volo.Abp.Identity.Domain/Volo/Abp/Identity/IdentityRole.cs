@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Security.Claims;
 using JetBrains.Annotations;
 using Volo.Abp.Auditing;
@@ -13,7 +14,7 @@ namespace Volo.Abp.Identity
     /// <summary>
     /// Represents a role in the identity system
     /// </summary>
-    public class IdentityRole : AggregateRoot<Guid>, IHasConcurrencyStamp, IMultiTenant
+    public class IdentityRole : AggregateRoot<Guid>, IMultiTenant
     {
         public virtual Guid? TenantId { get; protected set; }
 
@@ -32,12 +33,6 @@ namespace Volo.Abp.Identity
         /// Navigation property for claims in this role.
         /// </summary>
         public virtual ICollection<IdentityRoleClaim> Claims { get; protected set; }
-
-        /// <summary>
-        /// A random value that should change whenever a role is persisted to the store
-        /// </summary>
-        [DisableAuditing]
-        public virtual string ConcurrencyStamp { get; set; }
 
         /// <summary>
         /// A default role is automatically assigned to a new user
@@ -89,6 +84,13 @@ namespace Volo.Abp.Identity
             {
                 AddClaim(guidGenerator, claim);
             }
+        }
+
+        public virtual IdentityRoleClaim FindClaim([NotNull] Claim claim)
+        {
+            Check.NotNull(claim, nameof(claim));
+
+            return Claims.FirstOrDefault(c => c.ClaimType == claim.Type && c.ClaimValue == claim.Value);
         }
 
         public virtual void RemoveClaim([NotNull] Claim claim)
